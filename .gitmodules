@@ -1,0 +1,3 @@
+[submodule "dotaservice"]
+	path = dotaservice
+	url = https://github.com/TimZaman/dotaservice.git
