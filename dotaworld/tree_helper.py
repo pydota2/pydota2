@@ -3,6 +3,7 @@
 ###
 
 import json
+from dotaservice.dotaservice.protos.dota_gcmessages_common_bot_script_pb2 import CMsgBotWorldState
 
 BOUNDING_SIZE   = 64.
 BOUNDING_OFFSET = BOUNDING_SIZE / 2.
@@ -14,6 +15,7 @@ class Dota2_Tree:
         self.y      = y
         self.z      = z
         self.alive  = True
+        self.delay  = False
 
     def getBoundingBox(self):
         return (self.x-BOUNDING_OFFSET, self.y+BOUNDING_OFFSET), \
@@ -26,7 +28,12 @@ class Dota2_Tree:
     def respawn(self):
         self.alive = True
         #print('Respawned', self)
+        if self.delay:
+            self.delay = False
 
+    def delay(self):
+        self.delay = True
+            
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, indent=2)
 
@@ -47,6 +54,9 @@ class Dota2_Trees:
     def respawnTrees(self, ids=[]):
         [self.tree_list[id].respawn() for id in ids]
 
+    def delayRespawnTrees(self, id=[]):
+        [self.tree_list[id].delay() for id in ids]
+        
     def getTreesInBoundingBox(self, x1, y1, x2, y2, aliveOnly=True):
         ret = []
         for t in self.tree_list.values():
@@ -60,6 +70,19 @@ class Dota2_Trees:
                     ret.append(t.id)
         return ret
 
+    def handleEventTreeFrame(self, eventTreeFrame):
+        tree_id   = eventTreeFrame.get('tree_id')
+        destroyed = eventTreeFrame.get('destroyed', 0)
+        respawned = eventTreeFrame.get('respawned', 0)
+        delayed   = eventTreeFrame.get('delayed', 0)
+        
+        if destroyed:
+            self.destroyTrees([tree_id])
+        if respawned:
+            self.respawnTrees([tree_id])
+        if delayed:
+            self.delayRespawnTrees([tree_id])
+        
     def _loadTrees(self, filename):
         with open(filename, 'r') as fh:
             lines = fh.readlines()
