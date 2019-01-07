@@ -1,3 +1,6 @@
 [submodule "dotaservice"]
 	path = dotaservice
 	url = https://github.com/TimZaman/dotaservice.git
+[submodule "dotaclient"]
+	path = dotaclient
+	url = https://github.com/TimZaman/dotaclient.git
