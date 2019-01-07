@@ -1,9 +1,13 @@
-"""Expose world data in a more useful form than the raw protos."""
+###
+### Helper file for Dota2 Entity/World Event representation
+### - expose world data in a more useful form than the raw protos
+###
+
+from pydota2.dotaservice.dotaservice.protos.dota_gcmessages_common_bot_script_pb2 import CMsgBotWorldState
 
 import math
 import collections
 import pydota2.dotaworld.location as loc
-from pydota2.lib.gfile import *
 import json
 
 
@@ -13,13 +17,14 @@ def load_json_file(fname):
         return json.load(infile)
 
 
+"""
+THIS FILE IS NOT COMPLETE ALTHOUGH IT WILL COMPILE
+THIS IS A WORK-IN-PROGRESS 
+"""
+
 ability_data = None
 hero_data = None
 unit_data = None
-
-"""
-THIS FILE IS NOT COMPLETE ALTHOUGH IT WILL COMPILE
-"""
 
 class HeroSelectionData(object):
     """Handle initial data durning hero selection."""
@@ -140,6 +145,9 @@ class UnitData(object):
     def get_name(self):
         return self.data.name
 
+    def get_type(self):
+        return self.data.unit_type
+
     def get_location(self):
         return loc.Location.build(self.data.location)
 
@@ -151,7 +159,7 @@ class UnitData(object):
 
     def get_curr_move_speed(self):
         return self.data.current_movement_speed
-    
+
     def is_stunned(self):
         return self.data.is_stunned
 
@@ -162,6 +170,7 @@ class UnitData(object):
         ret  = "<UnitData>\n"
         ret += "\tName: %s\n" % self.get_name()
         return ret
+
 
 class PlayerData(object):
     """Maintain certain information about our players."""
@@ -348,10 +357,6 @@ class WorldData(object):
 
         self.roshan = None
 
-
-    def get_player_prtt(self, player_id):
-        return self.player_data[player_id].avg_prtt
-
     def update_world_data(self, data):
         # make sure we are in game
         assert data.game_state in [4,5]
@@ -400,73 +405,74 @@ class WorldData(object):
         for unit in unit_data:
             self.units[unit.handle] = UnitData(unit.handle, unit)
 
-            if unit.unit_type == 1:  # HERO
+            if unit.unit_type == CMsgBotWorldState.UnitType.Value('HERO'):
                 if unit.team_id == self.team_id:
                     self.good_players[unit.player_id] = {'unit': self.units[unit.handle]}
                 else:
                     self.bad_players[unit.player_id] = {'unit': self.units[unit.handle]}
 
-            elif unit.unit_type == 2:  # CREEP HERO
+            elif unit.unit_type == CMsgBotWorldState.UnitType.Value('CREEP_HERO'):
                 if unit.team_id == self.team_id:
                     self.good_hero_units.append(unit.handle)
                 else:
                     self.bad_hero_units.append(unit.handle)
 
-            elif unit.unit_type == 3:  # LANE CREEP
+            elif unit.unit_type == CMsgBotWorldState.UnitType.Value('LANE_CREEP'):
                 if unit.team_id == self.team_id:
                     self.good_lane_creep.append(self.units[unit.handle])
                 else:
                     self.bad_lane_creep.append(self.units[unit.handle])
 
-            elif unit.unit_type == 4:  # JUNGLE CREEP
+            elif unit.unit_type == CMsgBotWorldState.UnitType.Value('JUNGLE_CREEP'):
                 self.jungle_creep.append(self.units[unit.handle])
 
-            elif unit.unit_type == 5:  # ROSHAN
+            elif unit.unit_type == CMsgBotWorldState.UnitType.Value('ROSHAN'):
                 self.roshan = self.units[unit.handle]
 
-            elif unit.unit_type == 6:  # TOWERS
+            elif unit.unit_type == CMsgBotWorldState.UnitType.Value('TOWER'):
                 if unit.team_id == self.team_id:
                     self.good_towers.append(self.units[unit.handle])
                 else:
                     self.bad_towers.append(self.units[unit.handle])
 
-            elif unit.unit_type == 7:  # BARRACKS
+            elif unit.unit_type == CMsgBotWorldState.UnitType.Value('BARRACKS'):
                 if unit.team_id == self.team_id:
                     self.good_rax.append(self.units[unit.handle])
                 else:
                     self.bad_rax.append(self.units[unit.handle])
 
-            elif unit.unit_type == 8:  # SHRINES
+            elif unit.unit_type == CMsgBotWorldState.UnitType.Value('SHRINE'):
                 if unit.team_id == self.team_id:
                     self.good_shrines.append(self.units[unit.handle])
                 else:
                     self.bad_shrines.append(self.units[unit.handle])
 
-            elif unit.unit_type == 9:  # ANCIENT
+            # ANCIENT
+            elif unit.unit_type == CMsgBotWorldState.UnitType.Value('FORT'):
                 if unit.team_id == self.team_id:
                     self.good_ancient = self.units[unit.handle]
                 else:
                     self.bad_ancient = self.units[unit.handle]
 
-            elif unit.unit_type == 10: # BUILDINGS/EFFIGIES
+            elif unit.unit_type == CMsgBotWorldState.UnitType.Value('BUILDING'):
                 if unit.team_id == self.team_id:
                     self.good_buildings = self.units[unit.handle]
                 else:
                     self.bad_buildings= self.units[unit.handle]
 
-            elif unit.unit_type == 11:  # COURIER
+            elif unit.unit_type == CMsgBotWorldState.UnitType.Value('COURIER'):
                 if unit.team_id == self.team_id:
                     self.good_courier = self.units[unit.handle]
                 else:
                     self.bad_courier = self.units[unit.handle]
 
-            elif unit.unit_type == 12:  # WARDS
+            elif unit.unit_type == CMsgBotWorldState.UnitType.Value('WARD'):
                 if unit.team_id == self.team_id:
                     self.good_wards = self.units[unit.handle]
                 else:
                     self.bad_wards = self.units[unit.handle]
 
-            elif unit.unit_type == 0:  # INVALID
+            elif unit.unit_type == CMsgBotWorldState.UnitType.Value('INVALID'):
                 #print("INVALID UNIT TYPE:\n%s" % str(unit))
                 bInvalidFound = True
 
