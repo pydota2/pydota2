@@ -1,0 +1,9 @@
+protobuf
+torch
+tensorboardX
+pprint
+grpclib
+grpcio-tools
+aioamqp
+pika
+google-cloud-storage
