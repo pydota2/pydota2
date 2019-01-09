@@ -5,6 +5,7 @@
 
 from dotaservice.protos.dota_gcmessages_common_bot_script_pb2 import CMsgBotWorldState
 
+from os.path import join
 import math
 import collections
 import location as loc
@@ -12,7 +13,7 @@ import json
 
 
 def load_json_file(fname):
-    fname = JoinPath('pydota2', 'patching', fname)
+    fname = join('patching', fname)
     with open(fname, 'r') as infile:
         return json.load(infile)
 
