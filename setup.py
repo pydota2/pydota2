@@ -31,20 +31,8 @@ setuptools.setup(
         "Topic :: Software Development",
     ],
     install_requires=[
-        'grpclib',
         'protobuf',
-	'pprint',
-	'torch',
-	'tensorboardX',
-	'aioamqp',
-	'pika',
     ],
     extras_require={
-        'dev': [
-            'grpcio-tools',
-        ],
-	'distributed': [
-            'google-cloud-storage',
-	],
     },
 )

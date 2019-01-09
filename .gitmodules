@@ -1,0 +1,6 @@
+[submodule "dotaclient"]
+	path = dotaclient
+	url = git@github.com:Nostrademous/dotaclient.git
+[submodule "dotaservice"]
+	path = dotaservice
+	url = git@github.com:Nostrademous/dotaservice.git
