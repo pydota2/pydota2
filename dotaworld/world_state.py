@@ -3,11 +3,11 @@
 ### - expose world data in a more useful form than the raw protos
 ###
 
-from pydota2.dotaservice.dotaservice.protos.dota_gcmessages_common_bot_script_pb2 import CMsgBotWorldState
+from dotaservice.protos.dota_gcmessages_common_bot_script_pb2 import CMsgBotWorldState
 
 import math
 import collections
-import pydota2.dotaworld.location as loc
+import location as loc
 import json
 
 
