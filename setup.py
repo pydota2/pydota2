@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pydota2",
-    version="0.1.0",
+    version="0.1.1",
     author="Andrzej Gorski",
     author_email="nostrademous@hotmail.com",
     description="pydota2 is a framework to play Dota 2 leveraging Tim Zaman's dotaservice and dotaclient work",
