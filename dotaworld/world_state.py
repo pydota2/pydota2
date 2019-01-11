@@ -175,32 +175,41 @@ class UnitData(object):
 
 class PlayerData(object):
     """Maintain certain information about our players."""
-    def __init__(self, pID, heroID):
+    def __init__(self, time, pID, heroID):
         self.pid = pID
         self.hero_id = heroID
         self.prtt = collections.deque(maxlen=10)
-        self.avg_prtt = 0.3
+        self.avg_prtt = 0.3 #TODO (nostrademous) Fix this to frame rate
         self.abilities = []
         self.items = []
         self.modifiers = []
 
+        self.prev_time  = time
         self.prev_pdata = None
         self.prev_udata = None
+        self.curr_time  = time
         self.pdata = None
         self.udata = None
 
-    def save_last_update(self, udata, pdata):
+    def save_last_update(self, time, udata, pdata):
+        self.prev_time = self.curr_time
         self.prev_pdata = self.pdata
         self.prev_udata = self.udata
 
+        self.curr_time = time
         self.pdata = pdata
         self.udata = udata
         self.update_abilities()
         self.update_items()
         self.update_modifiers()
 
+        self._update_prtt()
+
     def get_name(self):
         return hero_data[str(self.hero_id)]['Name']
+
+    def get_time_since_last_seen(self):
+        return self.curr_time - self.prev_time
 
     def get_talent_choice(self, tier):
         if 'Talents' in hero_data[str(self.hero_id)].keys():
@@ -210,9 +219,15 @@ class PlayerData(object):
         else:
             return None, None
 
-    def _update_prtt(self, prtt):
-        self.prtt.append(prtt)
-        self.avg_prtt = sum(self.prtt)/float(len(self.prtt))
+    # track player round trip time (prtt)
+    def _update_prtt(self):
+        time_delta = self.get_time_since_last_seen()
+        # TODO - (nostrademous) if game is paused, does game_time increment?
+        # I know, dota_time doesn't. Anyways, only update avg prtt when delta
+        # is greater than 0
+        if time_delta > 0.:
+            self.prtt.append(time_delta)
+            self.avg_prtt = sum(self.prtt)/float(len(self.prtt))
 
     def is_alive(self):
         return self.pdata.is_alive
@@ -337,15 +352,16 @@ class WorldData(object):
 
         self.team_id = data.team_id
         self.player_data = {}
-        self.last_update = -1000.0
+        self.update_time = data.game_time
 
         self._create_units(data.units)
         self._update_players(data.players)
 
         for player_id in self.good_players.keys():
-            self.player_data[player_id] = PlayerData(player_id,
+            self.player_data[player_id] = PlayerData(data.game_time, player_id,
                 self.good_players[player_id]['player'].hero_id)
-            self.player_data[player_id].save_last_update(self.good_players[player_id]['unit'],
+            self.player_data[player_id].save_last_update(data.game_time,
+                                                         self.good_players[player_id]['unit'],
                                                          self.good_players[player_id]['player'])
 
         # initialization of various unit-handle lookup lists
@@ -362,6 +378,8 @@ class WorldData(object):
         # make sure we are in game
         assert data.game_state in [4,5]
 
+        self.update_delta = data.game_time - self.update_time
+        self.update_time = data.game_time
         self._create_units(data.units)
         self._update_players(data.players)
 
@@ -369,7 +387,8 @@ class WorldData(object):
             if not player_id in self.player_data.keys():
                 self.player_data[player_id] = PlayerData(player_id,
                     self.good_players[player_id]['player'].hero_id)
-            self.player_data[player_id].save_last_update(self.good_players[player_id]['unit'],
+            self.player_data[player_id].save_last_update(data.game_time,
+                                                         self.good_players[player_id]['unit'],
                                                          self.good_players[player_id]['player'])
 
     def _create_units(self, unit_data):
