@@ -38,5 +38,7 @@ As the agent runs it will put updated models of what it learned in the
 `runs/` directory (subdirectories named by date/time of execution)
 
 # Acknowledgments
-Much of this code is co-developed with Tim Zaman
+Much of this code is co-developed with Tim Zaman and his work on a
+Dota2 gRPC service and AI-agent.
+
 [Tim Zaman](https://github.com/TimZaman)
