@@ -149,11 +149,35 @@ class UnitData(object):
     def get_type(self):
         return self.data.unit_type
 
+    def get_level(self):
+        return self.data.level
+
     def get_location(self):
         return loc.Location.build(self.data.location)
 
+    def is_alive(self):
+        return self.data.is_alive
+
     def get_facing(self):
         return self.data.facing
+
+    def get_health(self):
+        return self.data.health
+
+    def get_max_health(self):
+        return self.data.health_max
+
+    def get_health_regen(self):
+        return self.data.health_regen
+
+    def get_mana(self):
+        return self.data.mana
+
+    def get_max_mana(self):
+        return self.data.mana_max
+
+    def get_mana_regen(self):
+        return self.data.mana_regen
 
     def get_anim_activity(self):
         return self.data.anim_activity
@@ -166,6 +190,12 @@ class UnitData(object):
 
     def is_rooted(self):
         return self.data.is_rooted
+
+    def get_xp_needed_to_level(self):
+        return self.data.xp_needed_to_level
+
+    def get_net_worth(self):
+        return self.data.net_worth
 
     def __str__(self):
         ret  = "<UnitData>\n"
@@ -351,6 +381,7 @@ class WorldData(object):
         unit_data = load_json_file('units.json')
 
         self.team_id = data.team_id
+        self.game_state = data.game_state
         self.player_data = {}
         self.update_time = data.game_time
 
@@ -378,6 +409,7 @@ class WorldData(object):
         # make sure we are in game
         assert data.game_state in [4,5]
 
+        self.game_state = data.game_state
         self.update_delta = data.game_time - self.update_time
         self.update_time = data.game_time
         self._create_units(data.units)
