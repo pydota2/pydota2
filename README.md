@@ -18,7 +18,7 @@ This should build all the appropriate modules needed to run the system.
 `dotaservice`, `dotaworld`, `pydota2`
 
 Note, `dotaclient` is not built as a module b/c we launch code from within
-it direclty on the command shell (it depends on how you want to run the AI - 
+it directly on the command shell (it depends on how you want to run the AI - 
 distributed over K8s, locally, seeded with a pretrained model, etc.).
 
 # Execution
