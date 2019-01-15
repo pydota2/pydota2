@@ -374,8 +374,8 @@ class PlayerData(object):
         ret += "\tName: %s\n" % self.get_name()
         for ability in self.get_abilities():
             ret += str(ability)
-        for item in self.get_items():
-            ret += str(item)
+        #for item in self.get_items():
+        #    ret += str(item)
         for mod in self.get_modifiers():
             ret += str(mod)
         return ret
