@@ -180,7 +180,12 @@ class UnitData(object):
         return self.data.mana_max
 
     def get_mana_ratio(self):
-        return float(self.data.mana)/float(self.data.mana_max)
+        # certain units (like buildings) don't have mana
+        # so we need to try/catch
+        try:
+            return float(self.data.mana)/float(self.data.mana_max)
+        except ZeroDivisionError:
+            return 0.
 
     def get_mana_regen(self):
         return self.data.mana_regen
@@ -706,20 +711,20 @@ class WorldData(object):
     def get_my_minions(self):
         return self.good_hero_units
 
-    def get_good_players_unit_data(self):
-        return [self.good_players[key]['unit'].data for key in self.good_players.keys()]
+    def get_good_players_units(self):
+        return [self.good_players[key]['unit'] for key in self.good_players.keys()]
     
-    def get_bad_players_unit_data(self):
-        return [self.bad_players[key]['unit'].data for key in self.bad_players.keys()]
+    def get_bad_players_units(self):
+        return [self.bad_players[key]['unit'] for key in self.bad_players.keys()]
 
-    def get_good_nonhero_unit_data(self):
+    def get_good_nonhero_units(self):
         ret = []
-        ret.extend([self.good_hero_units[key]['unit'].data for key in self.good_hero_units.keys()])
-        ret.extend([self.good_lane_creep[key]['unit'].data for key in self.good_lane_creep.keys()])
+        ret.extend(self.good_hero_units)
+        ret.extend(self.good_lane_creep)
         return ret
 
-    def get_bad_nonhero_unit_data(self):
+    def get_bad_nonhero_units(self):
         ret = []
-        ret.extend([self.bad_hero_units[key]['unit'].data for key in self.bad_hero_units.keys()])
-        ret.extend([self.bad_lane_creep[key]['unit'].data for key in self.bad_lane_creep.keys()])
+        ret.extend(self.bad_hero_units)
+        ret.extend(self.bad_lane_creep)
         return ret
