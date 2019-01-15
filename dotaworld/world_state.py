@@ -167,6 +167,9 @@ class UnitData(object):
     def get_max_health(self):
         return self.data.health_max
 
+    def get_health_ratio(self):
+        return float(self.data.health)/float(self.data.health_max)
+
     def get_health_regen(self):
         return self.data.health_regen
 
@@ -176,8 +179,14 @@ class UnitData(object):
     def get_max_mana(self):
         return self.data.mana_max
 
+    def get_mana_ratio(self):
+        return float(self.data.mana)/float(self.data.mana_max)
+
     def get_mana_regen(self):
         return self.data.mana_regen
+
+    def get_attack_range(self):
+        return self.data.attack_range
 
     def get_anim_activity(self):
         return self.data.anim_activity
@@ -384,6 +393,7 @@ class WorldData(object):
         self.game_state = data.game_state
         self.player_data = {}
         self.update_time = data.game_time
+        self.dota_time = data.dota_time
 
         self._create_units(data.units)
         self._update_players(data.players)
@@ -412,6 +422,7 @@ class WorldData(object):
         self.game_state = data.game_state
         self.update_delta = data.game_time - self.update_time
         self.update_time = data.game_time
+        self.dota_time = data.dota_time
         self._create_units(data.units)
         self._update_players(data.players)
 
@@ -465,9 +476,9 @@ class WorldData(object):
 
             elif unit.unit_type == CMsgBotWorldState.UnitType.Value('CREEP_HERO'):
                 if unit.team_id == self.team_id:
-                    self.good_hero_units.append(unit.handle)
+                    self.good_hero_units.append(self.units[unit.handle])
                 else:
-                    self.bad_hero_units.append(unit.handle)
+                    self.bad_hero_units.append(self.units[unit.handle])
 
             elif unit.unit_type == CMsgBotWorldState.UnitType.Value('LANE_CREEP'):
                 if unit.team_id == self.team_id:
@@ -694,3 +705,21 @@ class WorldData(object):
     @property
     def get_my_minions(self):
         return self.good_hero_units
+
+    def get_good_players_unit_data(self):
+        return [self.good_players[key]['unit'].data for key in self.good_players.keys()]
+    
+    def get_bad_players_unit_data(self):
+        return [self.bad_players[key]['unit'].data for key in self.bad_players.keys()]
+
+    def get_good_nonhero_unit_data(self):
+        ret = []
+        ret.extend([self.good_hero_units[key]['unit'].data for key in self.good_hero_units.keys()])
+        ret.extend([self.good_lane_creep[key]['unit'].data for key in self.good_lane_creep.keys()])
+        return ret
+
+    def get_bad_nonhero_unit_data(self):
+        ret = []
+        ret.extend([self.bad_hero_units[key]['unit'].data for key in self.bad_hero_units.keys()])
+        ret.extend([self.bad_lane_creep[key]['unit'].data for key in self.bad_lane_creep.keys()])
+        return ret

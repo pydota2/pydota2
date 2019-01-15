@@ -13,6 +13,11 @@ class Location(collections.namedtuple("Location", ["x", "y", "z"])):
   def build(cls, obj):
     """Build a Location from an object that has properties `x`, `y` and `z`."""
     return cls(obj.x, obj.y, obj.z)
+  
+  @classmethod
+  def build(cls, x, y, z):
+    """Build a Location from `x`, `y` and `z`."""
+    return cls(x, y, z)
 
   @classmethod
   def unit_rand(cls):

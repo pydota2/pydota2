@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="dotaworld",
-    version="0.1.2",
+    version="0.1.3",
     author="Andrzej Gorski",
     author_email="nostrademous@hotmail.com",
     description="dotaworld is a framework for tracking/interpreting Dota2 protobuf data in internal class objects",
